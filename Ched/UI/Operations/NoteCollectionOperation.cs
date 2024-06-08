@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Ched.Core.Notes;
+﻿using Ched.Core.Notes;
 
 namespace Ched.UI.Operations
 {

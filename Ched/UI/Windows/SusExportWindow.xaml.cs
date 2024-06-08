@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
 using Ched.Core;
@@ -29,7 +26,7 @@ namespace Ched.UI.Windows
         private ScoreBook ScoreBook { get; }
 
         public string MusicFilter { get; } = Helpers.GetFilterString(FileFilterStrings.AudioFilter, SoundSource.SupportedExtensions);
-        public string ImageFilter { get; } = Helpers.GetFilterString(FileFilterStrings.ImageFilter, new[] { ".jpg", ".png", ".bmp" });
+        public string ImageFilter { get; } = Helpers.GetFilterString(FileFilterStrings.ImageFilter, [".jpg", ".png", ".bmp"]);
         public IEnumerable<string> Levels { get; } = Enumerable.Range(1, 14).SelectMany(p => new string[] { p.ToString(), $"{p}+" });
 
         public string Title => ScoreBook.Title;

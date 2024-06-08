@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Threading.Tasks;
 
 using Ched.Core.Notes;
 
@@ -58,8 +56,8 @@ namespace Ched.Drawing
             {
                 var blend = new ColorBlend(4)
                 {
-                    Colors = new Color[] { BackgroundEdgeColor, BackgroundMiddleColor, BackgroundMiddleColor, BackgroundEdgeColor },
-                    Positions = new float[] { 0.0f, 0.3f, 0.7f, 1.0f }
+                    Colors = [BackgroundEdgeColor, BackgroundMiddleColor, BackgroundMiddleColor, BackgroundEdgeColor],
+                    Positions = [0.0f, 0.3f, 0.7f, 1.0f]
                 };
                 brush.InterpolationColors = blend;
                 dc.Graphics.FillRectangle(brush, rect);

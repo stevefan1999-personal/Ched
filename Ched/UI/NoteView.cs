@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Reactive.Linq;
-using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
+using System.Reactive;
+using System.Reactive.Concurrency;
 
 using Ched.Core;
 using Ched.Core.Notes;
@@ -447,7 +445,8 @@ namespace Ched.UI
             var dragSubscription = mouseDown
                 .SelectMany(p => mouseMove.TakeUntil(mouseUp).TakeUntil(mouseUp)
                     .CombineLatest(Observable.Interval(TimeSpan.FromMilliseconds(200)).TakeUntil(mouseUp), (q, r) => q)
-                    .Sample(TimeSpan.FromMilliseconds(200), new ControlScheduler(this))
+                    // TODO fix ControlScheduler assembly reference problem - .Sample(TimeSpan.FromMilliseconds(200), new ControlScheduler(this))
+                    .Sample(TimeSpan.FromMilliseconds(200))
                     .Do(q =>
                     {
                         // コントロール端にドラッグされたらスクロールする
@@ -1031,7 +1030,7 @@ namespace Ched.UI
                                     var action = new AirAction.ActionNote(airAction) { Offset = (int)QuantizeTick };
                                     airAction.ActionNotes.Add(action);
                                     var op = new InsertAirActionOperation(Notes, airAction);
-                                    IOperation comp = InsertAirWithAirAction && Notes.GetReferencedAir(note).Count() == 0 ? (IOperation)new CompositeOperation("AIR, AIR-ACTIONの追加", new IOperation[] { new InsertAirOperation(Notes, new Air(note)), op }) : op;
+                                    IOperation comp = InsertAirWithAirAction && Notes.GetReferencedAir(note).Count() == 0 ? (IOperation)new CompositeOperation("AIR, AIR-ACTIONの追加", [new InsertAirOperation(Notes, new Air(note)), op]) : op;
                                     comp.Redo();
                                     Invalidate();
                                     return actionNoteHandler(action)

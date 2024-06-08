@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ched.Plugins
+﻿namespace Ched.Plugins
 {
     /// <summary>
     /// アプリケーションで利用可能なプラグインを表します。

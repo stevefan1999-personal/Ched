@@ -4,8 +4,6 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Ched.Core.Notes;
@@ -622,7 +620,7 @@ namespace Ched.UI
                 else
                 {
                     var removeOp = new RemoveEventOperation<T>(list, prev);
-                    OperationManager.InvokeAndPush(new CompositeOperation(insertOp.Description, new IOperation[] { removeOp, insertOp }));
+                    OperationManager.InvokeAndPush(new CompositeOperation(insertOp.Description, [removeOp, insertOp]));
                 }
                 NoteView.Invalidate();
             }
@@ -905,8 +903,8 @@ namespace Ched.UI
                 BackColor = Color.White,
                 RenderMode = ToolStripRenderMode.Professional
             };
-            menu.Items.AddRange(new ToolStripItem[]
-            {
+            menu.Items.AddRange(
+            [
                 new ToolStripMenuItem(MainFormStrings.FileMenu, null, fileMenuItems),
                 new ToolStripMenuItem(MainFormStrings.EditMenu, null, editMenuItems),
                 new ToolStripMenuItem(MainFormStrings.ViewMenu, null, viewMenuItems),
@@ -914,7 +912,7 @@ namespace Ched.UI
                 // PreviewManager初期化後じゃないといけないのダメ設計でしょ
                 new ToolStripMenuItem(MainFormStrings.PlayMenu, null, playMenuItems) { Enabled = PreviewManager.IsSupported },
                 new ToolStripMenuItem(MainFormStrings.HelpMenu, null, helpMenuItems)
-            });
+            ]);
             return menu;
         }
 
@@ -965,14 +963,14 @@ namespace Ched.UI
                 eraserButton.Checked = noteView.EditMode == EditMode.Erase;
             };
 
-            return new ToolStrip(new ToolStripItem[]
-            {
+            return new ToolStrip(
+            [
                 newFileButton, openFileButton, saveFileButton, exportButton, new ToolStripSeparator(),
                 cutButton, copyButton, pasteButton, new ToolStripSeparator(),
                 undoButton, redoButton, new ToolStripSeparator(),
                 penButton, selectionButton, eraserButton, new ToolStripSeparator(),
                 zoomInButton, zoomOutButton
-            });
+            ]);
         }
 
         private ToolStrip CreateNewNoteTypeToolStrip(NoteView noteView)
@@ -994,15 +992,15 @@ namespace Ched.UI
             };
             airKind.Text = "AIR";
             airKind.Click += (s, e) => noteView.NewNoteType = NoteType.Air;
-            airKind.DropDown.Items.AddRange(new ToolStripItem[]
-            {
+            airKind.DropDown.Items.AddRange(
+            [
                 new ToolStripMenuItem(MainFormStrings.AirUp, Resources.AirUpIcon, (s, e) => noteView.AirDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Center)),
                 new ToolStripMenuItem(MainFormStrings.AirLeftUp, Resources.AirLeftUpIcon, (s, e) => noteView.AirDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Left)),
                 new ToolStripMenuItem(MainFormStrings.AirRightUp, Resources.AirRightUpIcon, (s, e) => noteView.AirDirection = new AirDirection(VerticalAirDirection.Up, HorizontalAirDirection.Right)),
                 new ToolStripMenuItem(MainFormStrings.AirDown, Resources.AirDownIcon, (s, e) => noteView.AirDirection = new AirDirection(VerticalAirDirection.Down, HorizontalAirDirection.Center)),
                 new ToolStripMenuItem(MainFormStrings.AirLeftDown, Resources.AirLeftDownIcon, (s, e) => noteView.AirDirection = new AirDirection(VerticalAirDirection.Down, HorizontalAirDirection.Left)),
                 new ToolStripMenuItem(MainFormStrings.AirRightDown, Resources.AirRightDownIcon, (s, e) => noteView.AirDirection = new AirDirection(VerticalAirDirection.Down, HorizontalAirDirection.Right))
-            });
+            ]);
             airKind.Image = Resources.AirUpIcon;
             ShortcutManager.ShortcutUpdated += (s, e) =>
             {
@@ -1076,11 +1074,11 @@ namespace Ched.UI
                 }
             };
 
-            return new ToolStrip(new ToolStripItem[]
-            {
+            return new ToolStrip(
+            [
                 tapButton, exTapButton, holdButton, slideButton, slideStepButton, airKind, airActionButton, flickButton, damageButton,
                 quantizeComboBox
-            });
+            ]);
         }
     }
 }

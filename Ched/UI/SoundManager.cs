@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-using Un4seen.Bass;
-using Un4seen.Bass.AddOn.Fx;
+using ManagedBass;
+using ManagedBass.Fx;
 
 namespace Ched.UI
 {
     public class SoundManager : IDisposable
     {
         readonly HashSet<int> playing = new HashSet<int>();
-        readonly HashSet<SYNCPROC> syncProcs = new HashSet<SYNCPROC>();
+        readonly HashSet<SyncProcedure> syncProcs = new HashSet<SyncProcedure>();
         readonly Dictionary<string, Queue<int>> handles = new Dictionary<string, Queue<int>>();
         readonly Dictionary<string, double> durations = new Dictionary<string, double>();
 
@@ -23,15 +21,15 @@ namespace Ched.UI
         public void Dispose()
         {
             if (!IsSupported) return;
-            Bass.BASS_Stop();
-            Bass.BASS_PluginFree(0);
-            Bass.BASS_Free();
+            Bass.Stop();
+            Bass.PluginFree(0);
+            Bass.Free();
         }
 
         public SoundManager()
         {
             // なぜBass.LoadMe()呼び出すとfalseなんでしょうね
-            if (!Bass.BASS_Init(-1, 44100, BASSInit.BASS_DEVICE_DEFAULT, IntPtr.Zero))
+            if (!Bass.Init())
             {
                 IsSupported = false;
                 return;
@@ -45,17 +43,17 @@ namespace Ched.UI
             {
                 if (handles.ContainsKey(path)) return;
                 int handle = GetHandle(path);
-                long len = Bass.BASS_ChannelGetLength(handle);
+                long len = Bass.ChannelGetLength(handle);
                 handles.Add(path, new Queue<int>());
-                lock (durations) durations.Add(path, Bass.BASS_ChannelBytes2Seconds(handle, len));
+                lock (durations) durations.Add(path, Bass.ChannelBytes2Seconds(handle, len));
             }
         }
 
         protected int GetHandle(string filepath)
         {
-            int rawHandle = Bass.BASS_StreamCreateFile(filepath, 0, 0, BASSFlag.BASS_STREAM_DECODE);
+            int rawHandle = Bass.CreateStream(filepath, 0, 0, BassFlags.Decode);
             if (rawHandle == 0) throw new ArgumentException("cannot create a stream.");
-            int tempoHandle = BassFx.BASS_FX_TempoCreate(rawHandle, BASSFlag.BASS_FX_FREESOURCE);
+            int tempoHandle = BassFx.TempoCreate(rawHandle, BassFlags.FxFreeSource);
             if (tempoHandle == 0) throw new ArgumentException("cannot create a stream.");
             return tempoHandle;
         }
@@ -96,23 +94,23 @@ namespace Ched.UI
                 {
                     handle = GetHandle(path);
 
-                    var proc = new SYNCPROC((h, channel, data, user) =>
+                    var proc = new SyncProcedure((h, channel, data, user) =>
                     {
                         lock (freelist) freelist.Enqueue(handle);
                     });
 
                     int syncHandle;
-                    syncHandle = Bass.BASS_ChannelSetSync(handle, BASSSync.BASS_SYNC_END, 0, proc, IntPtr.Zero);
+                    syncHandle = Bass.ChannelSetSync(handle, SyncFlags.End, 0, proc, IntPtr.Zero);
                     if (syncHandle == 0) throw new InvalidOperationException("cannot set sync");
                     lock (syncProcs) syncProcs.Add(proc); // avoid GC
                 }
             }
 
             lock (playing) playing.Add(handle);
-            Bass.BASS_ChannelSetPosition(handle, offset);
-            Bass.BASS_ChannelSetAttribute(handle, BASSAttribute.BASS_ATTRIB_VOL, (float)volume);
-            Bass.BASS_ChannelSetAttribute(handle, BASSAttribute.BASS_ATTRIB_TEMPO, (float)((speed - 1.0) * 100));
-            Bass.BASS_ChannelPlay(handle, false);
+            Bass.ChannelSetPosition(handle, Bass.ChannelSeconds2Bytes(handle, offset));
+            Bass.ChannelSetAttribute(handle, ChannelAttribute.Volume, volume);
+            Bass.ChannelSetAttribute(handle, ChannelAttribute.Tempo, (speed - 1.0) * 100);
+            Bass.ChannelPlay(handle, false);
         }
 
         public void StopAll()
@@ -122,7 +120,7 @@ namespace Ched.UI
             {
                 foreach (int handle in playing)
                 {
-                    Bass.BASS_ChannelStop(handle);
+                    Bass.ChannelStop(handle);
                 }
                 playing.Clear();
             }
@@ -147,7 +145,7 @@ namespace Ched.UI
     [Serializable]
     public class SoundSource
     {
-        public static readonly IReadOnlyCollection<string> SupportedExtensions = new string[] { ".wav", ".mp3", ".ogg" };
+        public static readonly IReadOnlyCollection<string> SupportedExtensions = [".wav", ".mp3", ".ogg"];
 
         /// <summary>
         /// この音源における遅延時間を取得します。

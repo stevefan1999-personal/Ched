@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using Ched.Core.Notes;
 using Ched.Localization;
@@ -47,7 +44,7 @@ namespace Ched.Plugins
                     step.SetPosition(q.LaneIndex - res.StartLaneIndex, q.Width - res.StartWidth);
                     return step;
                 })
-                .Concat(new[] { trailing });
+                .Concat([trailing]);
                 res.StepNotes.AddRange(steps);
                 return res;
             });

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 using Ched.Core;
@@ -82,7 +81,7 @@ namespace Ched.Plugins
 
             foreach (var hold in score.Notes.Holds)
             {
-                var tickList = new HashSet<int>(calcComboTicks(hold.StartTick, new int[] { hold.Duration }));
+                var tickList = new HashSet<int>(calcComboTicks(hold.StartTick, [hold.Duration]));
 
                 if (airList.Contains(hold.EndNote))
                 {
@@ -111,7 +110,7 @@ namespace Ched.Plugins
             foreach (var airAction in score.Notes.AirActions)
             {
                 var airActionTicks = airAction.ActionNotes.Select(p => p.Offset).ToList();
-                var lostSections = airActionTicks.Concat(new[] { 0 }).Select(p =>
+                var lostSections = airActionTicks.Concat([0]).Select(p =>
                  {
                      int interval = barTick / comboDivider(getHeadBpmAt(airAction.StartTick + p));
                      return Tuple.Create(p, interval);
